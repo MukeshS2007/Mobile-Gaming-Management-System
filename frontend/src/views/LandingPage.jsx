@@ -15,7 +15,7 @@ import {
   Star
 } from 'lucide-react';
 
-export default function LandingPage({ onGoLogin, onGoApp }) {
+export default function LandingPage({ onGoLogin, onGoRegister, onGoApp }) {
   return (
     <div style={{ background: '#ffffff', minHeight: '100vh', color: '#1e293b' }}>
       {/* Top Navigation */}
@@ -113,7 +113,7 @@ export default function LandingPage({ onGoLogin, onGoApp }) {
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 44 }}>
             <button 
-              onClick={onGoApp} 
+              onClick={onGoRegister || onGoLogin} 
               className="btn btn-primary" 
               style={{ padding: '14px 28px', fontSize: '1rem', borderRadius: 'var(--radius-md)' }}
             >
@@ -367,7 +367,7 @@ export default function LandingPage({ onGoLogin, onGoApp }) {
             Join the top studios managing the future of mobile entertainment. Start your 14-day full-access trial today. No credit card required.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 14 }}>
-            <button onClick={onGoApp} style={{
+            <button onClick={onGoRegister || onGoLogin} style={{
               background: '#ffffff',
               color: '#4f46e5',
               padding: '12px 28px',

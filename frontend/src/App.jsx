@@ -28,8 +28,8 @@ import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 export default function App() {
   const { user, isAuthenticated, logout, toasts, removeToast } = useAuth();
 
-  // Active view state
-  const [activeView, setActiveView] = useState('overview'); // 'landing' | 'login' | 'overview' | 'mission_control' | 'executive' | 'global_ops' | 'games' | 'players' | 'player_details' | 'analytics' | 'design_system'
+  // Active view state (defaults to Landing Page as first interface)
+  const [activeView, setActiveView] = useState('landing'); // 'landing' | 'login' | 'overview' | 'mission_control' | 'executive' | 'global_ops' | 'games' | 'players' | 'player_details' | 'analytics' | 'design_system'
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   // Modals
@@ -43,8 +43,10 @@ export default function App() {
       <>
         <LandingPage 
           onGoLogin={() => setActiveView('login')} 
+          onGoRegister={() => setShowAuthModal(true)}
           onGoApp={() => setActiveView('overview')} 
         />
+        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
         <ToastContainer toasts={toasts} removeToast={removeToast} />
       </>
     );
