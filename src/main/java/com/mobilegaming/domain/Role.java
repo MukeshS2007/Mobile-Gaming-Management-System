@@ -1,0 +1,2 @@
+package com.mobilegaming.domain;
+public enum Role { GUEST, PLAYER, QA_TESTER, COMMUNITY_MANAGER, DATA_ANALYST, GAME_DEVELOPER, LIVE_OPS_MANAGER, ADMIN }
