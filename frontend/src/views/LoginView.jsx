@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Gamepad2, ShieldCheck, ArrowRight, Lock, Mail } from 'lucide-react';
+import { Gamepad2, ShieldCheck, ArrowRight, Lock, Mail, Sun, Moon } from 'lucide-react';
 
-export default function LoginView({ onBackToLanding, onGoRegister, onLoginSuccess }) {
+export default function LoginView({ onBackToLanding, onGoRegister, onLoginSuccess, theme, toggleTheme }) {
   const { login, addToast } = useAuth();
   const [email, setEmail] = useState('admin');
   const [password, setPassword] = useState('StrongPass#2026');
@@ -25,46 +25,86 @@ export default function LoginView({ onBackToLanding, onGoRegister, onLoginSucces
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#f8fafc',
+      background: 'var(--bg-app)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '24px 16px'
+      padding: '24px 16px',
+      position: 'relative',
+      transition: 'background 0.25s ease'
     }}>
+      {/* Top Controls: Theme Toggle and Back */}
+      <div style={{
+        position: 'absolute',
+        top: 24,
+        right: 32,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      }}>
+        {toggleTheme && (
+          <button
+            onClick={toggleTheme}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-subtle)',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease'
+            }}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Cyber Dark Mode'}
+          >
+            {theme === 'dark' ? (
+              <Sun size={17} style={{ color: '#f59e0b' }} />
+            ) : (
+              <Moon size={17} style={{ color: '#6366f1' }} />
+            )}
+          </button>
+        )}
+      </div>
+
       {/* Brand Header */}
       <div style={{ textAlign: 'center', marginBottom: 28, cursor: 'pointer' }} onClick={onBackToLanding}>
         <div style={{
-          width: 48,
-          height: 48,
-          borderRadius: 14,
-          background: '#6366f1',
+          width: 52,
+          height: 52,
+          borderRadius: 16,
+          background: 'var(--primary-gradient)',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'white',
-          boxShadow: '0 8px 20px rgba(99, 102, 241, 0.35)',
-          marginBottom: 12
+          boxShadow: 'var(--shadow-purple)',
+          marginBottom: 14
         }}>
           <Gamepad2 size={28} />
         </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>
+        <h1 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--text-heading)', marginBottom: 4, letterSpacing: '-0.03em' }}>
           Enterprise Access
         </h1>
-        <p style={{ fontSize: '0.88rem', color: '#64748b' }}>
+        <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
           Management Portal for Mobile Gaming Operations
         </p>
       </div>
 
       {/* Main Login Card */}
-      <div className="mgms-card" style={{
-        maxWidth: 440,
-        width: '100%',
-        padding: '36px 32px',
-        background: '#ffffff',
-        borderRadius: 20,
-        boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 20px 25px -5px rgba(0,0,0,0.02)'
-      }}>
+      <div 
+        className="mgms-card" 
+        style={{
+          maxWidth: 440,
+          width: '100%',
+          padding: '36px 32px',
+          borderRadius: 22,
+          boxShadow: 'var(--shadow-lg), var(--card-glow)'
+        }}
+      >
         {/* Social SSO Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
           <button
@@ -103,21 +143,21 @@ export default function LoginView({ onBackToLanding, onGoRegister, onLoginSucces
           display: 'flex',
           alignItems: 'center',
           textAlign: 'center',
-          color: '#94a3b8',
+          color: 'var(--text-dim)',
           fontSize: '0.72rem',
           fontWeight: 700,
           letterSpacing: '0.06em',
           margin: '22px 0'
         }}>
-          <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+          <div style={{ flex: 1, height: 1, background: 'var(--border-color)' }} />
           <span style={{ padding: '0 12px' }}>OR CONTINUE WITH EMAIL</span>
-          <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+          <div style={{ flex: 1, height: 1, background: 'var(--border-color)' }} />
         </div>
 
         {/* Email & Password Form */}
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: '#475569', marginBottom: 6, letterSpacing: '0.04em' }}>
+            <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.04em' }}>
               BUSINESS EMAIL
             </label>
             <input
@@ -132,12 +172,12 @@ export default function LoginView({ onBackToLanding, onGoRegister, onLoginSucces
 
           <div style={{ marginBottom: 18 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <label style={{ fontSize: '0.74rem', fontWeight: 700, color: '#475569', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
                 PASSWORD
               </label>
               <span 
                 onClick={onGoRegister} 
-                style={{ fontSize: '0.74rem', color: '#6366f1', fontWeight: 600, cursor: 'pointer' }}
+                style={{ fontSize: '0.74rem', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}
               >
                 Forgot Key?
               </span>
@@ -153,12 +193,12 @@ export default function LoginView({ onBackToLanding, onGoRegister, onLoginSucces
           </div>
 
           {/* Persist checkbox */}
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.82rem', color: '#475569', marginBottom: 22, cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.82rem', color: 'var(--text-body)', marginBottom: 22, cursor: 'pointer' }}>
             <input
               type="checkbox"
               checked={persistSession}
               onChange={(e) => setPersistSession(e.target.checked)}
-              style={{ accentColor: '#6366f1', width: 16, height: 16 }}
+              style={{ accentColor: 'var(--primary)', width: 16, height: 16 }}
             />
             <span>Persist session for 30 days</span>
           </label>
@@ -178,17 +218,17 @@ export default function LoginView({ onBackToLanding, onGoRegister, onLoginSucces
         <div style={{
           marginTop: 24,
           padding: '14px 16px',
-          background: '#f8fafc',
-          border: '1px solid #e2e8f0',
+          background: 'var(--bg-subtle)',
+          border: '1px solid var(--border-color)',
           borderRadius: 12,
           display: 'flex',
           gap: 12,
           alignItems: 'flex-start'
         }}>
-          <ShieldCheck size={20} color="#6366f1" style={{ flexShrink: 0, marginTop: 2 }} />
+          <ShieldCheck size={20} color="var(--primary)" style={{ flexShrink: 0, marginTop: 2 }} />
           <div>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f172a' }}>Enterprise Security Active</div>
-            <div style={{ fontSize: '0.74rem', color: '#64748b', lineHeight: 1.45, marginTop: 2 }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-heading)' }}>Enterprise Security Active</div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', lineHeight: 1.45, marginTop: 2 }}>
               This portal uses JWT-based multi-layered authentication. Unauthorized access attempts are monitored and logged.
             </div>
           </div>
@@ -196,9 +236,9 @@ export default function LoginView({ onBackToLanding, onGoRegister, onLoginSucces
       </div>
 
       {/* Footer link */}
-      <div style={{ marginTop: 24, fontSize: '0.84rem', color: '#64748b' }}>
+      <div style={{ marginTop: 24, fontSize: '0.84rem', color: 'var(--text-muted)' }}>
         Don't have an enterprise account?{' '}
-        <span onClick={onGoRegister} style={{ color: '#6366f1', fontWeight: 600, cursor: 'pointer' }}>
+        <span onClick={onGoRegister} style={{ color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}>
           Request Access / Register
         </span>
       </div>
@@ -210,7 +250,7 @@ export default function LoginView({ onBackToLanding, onGoRegister, onLoginSucces
         alignItems: 'center',
         gap: 16,
         fontSize: '0.74rem',
-        color: '#94a3b8'
+        color: 'var(--text-dim)'
       }}>
         <span>Platform Status</span>
         <span>•</span>

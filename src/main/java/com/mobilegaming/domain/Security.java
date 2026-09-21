@@ -99,7 +99,7 @@ class SecurityConfiguration {
           .cors(c->{})
           .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .authorizeHttpRequests(a->a
-                  .requestMatchers("/auth/**","/games/**","/events/active","/actuator/**").permitAll()
+                  .requestMatchers("/auth/**","/games/**","/events/active","/actuator/**","/error").permitAll()
                   .anyRequest().authenticated())
           .addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class)
           .build();

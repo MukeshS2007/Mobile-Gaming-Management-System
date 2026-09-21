@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // Components & Layout
@@ -25,95 +26,32 @@ import AuthModal from './components/modals/AuthModal';
 
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
-export default function App() {
-  const { user, isAuthenticated, logout, toasts, removeToast } = useAuth();
-
-  // Active view state (defaults to Landing Page as first interface)
-  const [activeView, setActiveView] = useState('landing'); // 'landing' | 'login' | 'overview' | 'mission_control' | 'executive' | 'global_ops' | 'games' | 'players' | 'player_details' | 'analytics' | 'design_system'
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
-
-  // Modals
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // If user chooses Landing Page (Page 1)
-  if (activeView === 'landing') {
-    return (
-      <>
-        <LandingPage 
-          onGoLogin={() => setActiveView('login')} 
-          onGoRegister={() => setShowAuthModal(true)}
-          onGoApp={() => setActiveView('overview')} 
-        />
-        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
-        <ToastContainer toasts={toasts} removeToast={removeToast} />
-      </>
-    );
-  }
-
-  // If user chooses Login Page (Page 2)
-  if (activeView === 'login') {
-    return (
-      <>
-        <LoginView 
-          onBackToLanding={() => setActiveView('landing')} 
-          onGoRegister={() => setShowAuthModal(true)} 
-          onLoginSuccess={() => setActiveView('overview')}
-        />
-        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
-        <ToastContainer toasts={toasts} removeToast={removeToast} />
-      </>
-    );
-  }
-
-  // Render Portal Views (Pages 3 to 10)
-  const renderContent = () => {
-    switch (activeView) {
-      case 'overview':
-        return <SystemOverview onSelectTab={setActiveView} />;
-      case 'mission_control':
-        return <MissionControl />;
-      case 'executive':
-        return <ExecutiveOverview />;
-      case 'global_ops':
-        return <GlobalOperations />;
-      case 'games':
-        return <GamesPortfolio />;
-      case 'players':
-        return (
-          <PlayerManagement
-            onSelectPlayer={(player) => {
-              setSelectedPlayer(player);
-              setActiveView('player_details');
-            }}
-          />
-        );
-      case 'player_details':
-        return (
-          <PlayerDetails
-            player={selectedPlayer}
-            onBack={() => setActiveView('players')}
-          />
-        );
-      case 'analytics':
-        return <AnalyticsDashboard />;
-      case 'design_system':
-        return <DesignSystemView />;
-      default:
-        return <SystemOverview onSelectTab={setActiveView} />;
-    }
-  };
+function PortalLayout({
+  children,
+  theme,
+  toggleTheme,
+  searchQuery,
+  setSearchQuery,
+  onOpenNotifications,
+  onOpenProfile,
+  onOpenAuth
+}) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: 'var(--bg-app)', overflow: 'hidden' }}>
+    <div 
+      data-theme={theme} 
+      className="bg-ambient-mesh"
+      style={{ display: 'flex', height: '100vh', background: 'var(--bg-app)', color: 'var(--text-body)', overflow: 'hidden' }}
+    >
       {/* Left Navigation Sidebar */}
       <Sidebar
-        activeTab={activeView}
-        setActiveTab={setActiveView}
+        activeTab={location.pathname}
         onLogout={() => {
           logout();
-          setActiveView('landing');
+          navigate('/login');
         }}
       />
 
@@ -121,25 +59,206 @@ export default function App() {
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
         {/* Top Navbar */}
         <Navbar
-          onOpenNotifications={() => setShowNotifications(true)}
-          onOpenProfile={() => setShowProfile(true)}
-          onGoLanding={() => setActiveView('landing')}
+          onOpenNotifications={onOpenNotifications}
+          onOpenProfile={onOpenProfile}
+          onOpenAuth={onOpenAuth}
+          onGoLanding={() => navigate('/')}
+          onLogout={() => {
+            logout();
+            navigate('/login');
+          }}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
         />
 
         {/* Scrollable Page Body */}
-        <main style={{ flex: 1, overflowY: 'auto' }}>
-          {renderContent()}
+        <main style={{ flex: 1, overflowY: 'auto', background: 'transparent' }}>
+          {children}
         </main>
       </div>
+    </div>
+  );
+}
 
-      {/* Modals */}
+function PlayerDetailsWrapper({ selectedPlayer }) {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const player = selectedPlayer || {
+    id: id || 'PLR-8821',
+    name: "Alex 'Cipher' Vance",
+    email: 'alex.vance@gaming.net',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&h=120&fit=crop',
+    country: 'United States (NA-West)',
+    memberSince: 'June 2022'
+  };
+
+  return <PlayerDetails player={player} onBack={() => navigate('/players')} />;
+}
+
+export default function App() {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout, toasts, removeToast } = useAuth();
+
+  // Theme State (Default Cyber Dark with smooth toggle)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('mgms_theme') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('mgms_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Modals
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  return (
+    <>
+      <Routes>
+        {/* Page 1: Landing Page */}
+        <Route
+          path="/"
+          element={
+            <div data-theme={theme} className="bg-ambient-mesh" style={{ minHeight: '100vh', background: 'var(--bg-app)' }}>
+              <LandingPage 
+                onGoLogin={() => navigate('/login')} 
+                onGoRegister={() => setShowAuthModal(true)}
+                onGoApp={() => navigate('/dashboard')} 
+                theme={theme}
+                toggleTheme={toggleTheme}
+              />
+            </div>
+          }
+        />
+        <Route path="/landing" element={<Navigate to="/" replace />} />
+
+        {/* Page 2: Login View */}
+        <Route
+          path="/login"
+          element={
+            <div data-theme={theme} className="bg-ambient-mesh" style={{ minHeight: '100vh', background: 'var(--bg-app)' }}>
+              <LoginView 
+                onBackToLanding={() => navigate('/')} 
+                onGoRegister={() => setShowAuthModal(true)} 
+                onLoginSuccess={() => navigate('/dashboard')}
+                theme={theme}
+                toggleTheme={toggleTheme}
+              />
+            </div>
+          }
+        />
+
+        {/* Pages 3 to 10: Platform Dashboard & Operations */}
+        <Route
+          path="/*"
+          element={
+            <PortalLayout
+              theme={theme}
+              toggleTheme={toggleTheme}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onOpenNotifications={() => setShowNotifications(true)}
+              onOpenProfile={() => setShowProfile(true)}
+              onOpenAuth={() => setShowAuthModal(true)}
+            >
+              <Routes>
+                {/* Page 3: System Overview (Default Dashboard) */}
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <SystemOverview 
+                      searchQuery={searchQuery} 
+                      setSearchQuery={setSearchQuery} 
+                      onClearSearch={() => setSearchQuery('')} 
+                    />
+                  } 
+                />
+                <Route path="/overview" element={<Navigate to="/dashboard" replace />} />
+
+                {/* Page 4: Mission Control */}
+                <Route path="/mission-control" element={<MissionControl searchQuery={searchQuery} />} />
+
+                {/* Page 5: Executive Overview */}
+                <Route path="/executive" element={<ExecutiveOverview searchQuery={searchQuery} />} />
+
+                {/* Page 6: Global Operations / Revenue */}
+                <Route path="/global-ops" element={<GlobalOperations searchQuery={searchQuery} />} />
+                <Route path="/revenue" element={<Navigate to="/global-ops" replace />} />
+
+                {/* Page 7: Games Portfolio */}
+                <Route 
+                  path="/games" 
+                  element={
+                    <GamesPortfolio 
+                      searchQuery={searchQuery} 
+                      setSearchQuery={setSearchQuery} 
+                      onClearSearch={() => setSearchQuery('')} 
+                    />
+                  } 
+                />
+
+                {/* Page 8: Player Management */}
+                <Route 
+                  path="/players" 
+                  element={
+                    <PlayerManagement
+                      searchQuery={searchQuery}
+                      setSearchQuery={setSearchQuery}
+                      onClearSearch={() => setSearchQuery('')}
+                      onSelectPlayer={(player) => {
+                        setSelectedPlayer(player);
+                        navigate(`/players/${player.id || 'details'}`);
+                      }}
+                    />
+                  } 
+                />
+
+                {/* Page 9: Player Details */}
+                <Route 
+                  path="/players/:id" 
+                  element={<PlayerDetailsWrapper selectedPlayer={selectedPlayer} />} 
+                />
+
+                {/* Page 10: Analytics Dashboard */}
+                <Route path="/analytics" element={<AnalyticsDashboard searchQuery={searchQuery} />} />
+
+                {/* Design System */}
+                <Route path="/design-system" element={<DesignSystemView theme={theme} toggleTheme={toggleTheme} />} />
+
+                {/* Fallback to Dashboard */}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </PortalLayout>
+          }
+        />
+      </Routes>
+
+      {/* Global Modals */}
       <NotificationsModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
       <ProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} />
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+        onSuccess={() => {
+          setShowAuthModal(false);
+          navigate('/dashboard');
+        }}
+      />
 
-      {/* Toast Notifications */}
+      {/* Global Toast Container */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-    </div>
+    </>
   );
 }
 
@@ -151,10 +270,10 @@ function ToastContainer({ toasts, removeToast }) {
           {t.type === 'success' && <CheckCircle2 size={16} color="var(--success)" />}
           {t.type === 'error' && <AlertCircle size={16} color="var(--danger)" />}
           {t.type === 'info' && <Info size={16} color="var(--primary)" />}
-          <span style={{ flex: 1, fontSize: '0.82rem' }}>{t.message}</span>
+          <span style={{ flex: 1, fontSize: '0.82rem', color: 'var(--text-heading)' }}>{t.message}</span>
           <button
             onClick={() => removeToast(t.id)}
-            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 2 }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', padding: 2 }}
           >
             <X size={14} />
           </button>

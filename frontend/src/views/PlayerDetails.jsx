@@ -45,7 +45,7 @@ export default function PlayerDetails({ player, onBack }) {
           background: 'none',
           border: 'none',
           fontSize: '0.84rem',
-          color: '#6366f1',
+          color: 'var(--primary)',
           fontWeight: 600,
           cursor: 'pointer',
           marginBottom: 18
@@ -61,14 +61,14 @@ export default function PlayerDetails({ player, onBack }) {
             <img
               src={activePlayer.avatar}
               alt={activePlayer.name}
-              style={{ width: 68, height: 68, borderRadius: '50%', objectFit: 'cover', border: '3px solid #e2e8f0' }}
+              style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--primary)', boxShadow: '0 0 16px rgba(99, 102, 241, 0.3)' }}
             />
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a' }}>{activePlayer.name}</h1>
+                <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-heading)' }}>{activePlayer.name}</h1>
                 <span className="badge badge-amber" style={{ fontSize: '0.72rem' }}>VIP GOLD</span>
               </div>
-              <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: 4, display: 'flex', gap: 14 }}>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: 4, display: 'flex', gap: 14 }}>
                 <span>Member since {activePlayer.memberSince || 'June 2022'}</span>
                 <span>•</span>
                 <span>{activePlayer.country || 'United States (NA-West)'}</span>
@@ -98,41 +98,41 @@ export default function PlayerDetails({ player, onBack }) {
       {/* 4 Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 28 }}>
         <div className="mgms-card" style={{ padding: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>
             <span>CURRENT BALANCE</span>
-            <span style={{ color: '#10b981' }}>+2.4%</span>
+            <span style={{ color: 'var(--success-text)' }}>+2.4%</span>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', fontFamily: 'Outfit', marginTop: 4 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-heading)', fontFamily: 'Outfit', marginTop: 4 }}>
             12,450 Gems
           </div>
         </div>
 
         <div className="mgms-card" style={{ padding: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>
             <span>LIFETIME SPEND</span>
-            <span style={{ color: '#10b981' }}>+2.4%</span>
+            <span style={{ color: 'var(--success-text)' }}>+2.4%</span>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', fontFamily: 'Outfit', marginTop: 4 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-heading)', fontFamily: 'Outfit', marginTop: 4 }}>
             $1,420.50
           </div>
         </div>
 
         <div className="mgms-card" style={{ padding: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>
             <span>AVG. SESSION</span>
-            <span style={{ color: '#10b981' }}>+2.4%</span>
+            <span style={{ color: 'var(--success-text)' }}>+2.4%</span>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', fontFamily: 'Outfit', marginTop: 4 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-heading)', fontFamily: 'Outfit', marginTop: 4 }}>
             4h 12m
           </div>
         </div>
 
         <div className="mgms-card" style={{ padding: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>
             <span>PLAYER LEVEL</span>
-            <span style={{ color: '#10b981' }}>+2.4%</span>
+            <span style={{ color: 'var(--success-text)' }}>+2.4%</span>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', fontFamily: 'Outfit', marginTop: 4 }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-heading)', fontFamily: 'Outfit', marginTop: 4 }}>
             Level 84
           </div>
         </div>
@@ -144,41 +144,41 @@ export default function PlayerDetails({ player, onBack }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* Social Presence */}
           <div className="mgms-card" style={{ padding: 22 }}>
-            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>Social Presence</h3>
+            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: 14 }}>Social Presence</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.84rem' }}>
               <div>
-                <div style={{ color: '#6366f1', fontWeight: 600 }}>@vortex_gaming</div>
-                <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Twitter / X</div>
+                <div style={{ color: 'var(--primary)', fontWeight: 600 }}>@vortex_gaming</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>Twitter / X</div>
               </div>
               <div>
-                <div style={{ color: '#0f172a', fontWeight: 600 }}>alex-pierce</div>
-                <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>GitHub Profile</div>
+                <div style={{ color: 'var(--text-heading)', fontWeight: 600 }}>alex-pierce</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>GitHub Profile</div>
               </div>
               <div>
-                <div style={{ color: '#0f172a', fontWeight: 600 }}>vortex.world</div>
-                <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Personal Site</div>
+                <div style={{ color: 'var(--text-heading)', fontWeight: 600 }}>vortex.world</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>Personal Site</div>
               </div>
             </div>
           </div>
 
           {/* Last Session */}
           <div className="mgms-card" style={{ padding: 22 }}>
-            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>Last Session</h3>
+            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: 14 }}>Last Session</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '0.82rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Logon:</span>
-                <span style={{ fontWeight: 600 }}>2024-10-25 09:44</span>
+                <span style={{ color: 'var(--text-muted)' }}>Logon:</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>2024-10-25 09:44</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>IP Address:</span>
+                <span style={{ color: 'var(--text-muted)' }}>IP Address:</span>
                 <code>192.168.1.42</code>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Device:</span>
-                <span style={{ fontWeight: 600 }}>iPhone 15 Pro Max</span>
+                <span style={{ color: 'var(--text-muted)' }}>Device:</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>iPhone 15 Pro Max</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Game Version:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Game Version:</span>
                 <code>v2.4.1-stable</code>
               </div>
             </div>
@@ -190,37 +190,37 @@ export default function PlayerDetails({ player, onBack }) {
           {/* Progress Timeline */}
           <div className="mgms-card" style={{ padding: 22 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a' }}>Progress Timeline</h3>
-              <span style={{ fontSize: '0.76rem', color: '#6366f1', fontWeight: 600, cursor: 'pointer' }}>View All History</span>
+              <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-heading)' }}>Progress Timeline</h3>
+              <span style={{ fontSize: '0.76rem', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}>View All History</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
-                  <span style={{ fontWeight: 700, color: '#0f172a' }}>🏆 Reached Mythic League</span>
-                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>2 hours ago</span>
+                  <span style={{ fontWeight: 700, color: 'var(--text-heading)' }}>🏆 Reached Mythic League</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>2 hours ago</span>
                 </div>
-                <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: 2 }}>
                   Successfully promoted to the top 1% of competitive players globally after a win streak of 12 matches.
                 </div>
               </div>
 
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
-                  <span style={{ fontWeight: 700, color: '#0f172a' }}>💳 Purchased 'Dragon Slayer' Bundle</span>
-                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Yesterday</span>
+                  <span style={{ fontWeight: 700, color: 'var(--text-heading)' }}>💳 Purchased 'Dragon Slayer' Bundle</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>Yesterday</span>
                 </div>
-                <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: 2 }}>
                   Completed transaction for the limited-edition cosmetic pack. Total gems deducted: 2,500.
                 </div>
               </div>
 
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
-                  <span style={{ fontWeight: 700, color: '#0f172a' }}>🎖️ Achievement Unlocked: 'Old Guard'</span>
-                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Oct 20, 2024</span>
+                  <span style={{ fontWeight: 700, color: 'var(--text-heading)' }}>🎖️ Achievement Unlocked: 'Old Guard'</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>Oct 20, 2024</span>
                 </div>
-                <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: 2 }}>
                   Awarded for maintaining an active subscription for 12 consecutive months without interruption.
                 </div>
               </div>
@@ -229,7 +229,7 @@ export default function PlayerDetails({ player, onBack }) {
 
           {/* Recent Transactions */}
           <div className="mgms-card" style={{ padding: 22 }}>
-            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>Recent Transactions</h3>
+            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: 14 }}>Recent Transactions</h3>
             <div className="table-container">
               <table className="mgms-table">
                 <thead>
@@ -249,8 +249,8 @@ export default function PlayerDetails({ player, onBack }) {
                   ].map((t) => (
                     <tr key={t.id}>
                       <td><code>{t.id}</code></td>
-                      <td style={{ fontWeight: 600 }}>{t.item}</td>
-                      <td><b>{t.amount}</b></td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{t.item}</td>
+                      <td><b style={{ color: 'var(--text-heading)' }}>{t.amount}</b></td>
                       <td>
                         <span className={`badge ${t.status === 'Completed' ? 'badge-green' : 'badge-red'}`}>
                           {t.status}
@@ -268,24 +268,24 @@ export default function PlayerDetails({ player, onBack }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* Moderation Log */}
           <div className="mgms-card" style={{ padding: 22 }}>
-            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>Moderation Log</h3>
+            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: 14 }}>Moderation Log</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.8rem' }}>
-              <div style={{ padding: 10, background: '#f8fafc', borderRadius: 8 }}>
+              <div style={{ padding: 12, background: 'var(--bg-subtle)', borderRadius: 10, border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
-                  <span style={{ color: '#d97706' }}>Chat Warning</span>
-                  <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>2 weeks ago</span>
+                  <span style={{ color: 'var(--warning-text)' }}>Chat Warning</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>2 weeks ago</span>
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 3 }}>
                   Player was flagged for minor toxicity in public lobby. Admin 'Sarah' issued a formal warning.
                 </div>
               </div>
 
-              <div style={{ padding: 10, background: '#f8fafc', borderRadius: 8 }}>
+              <div style={{ padding: 12, background: 'var(--bg-subtle)', borderRadius: 10, border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
-                  <span style={{ color: '#0f172a' }}>Investigation</span>
-                  <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>1 month ago</span>
+                  <span style={{ color: 'var(--text-heading)' }}>Investigation</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>1 month ago</span>
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 3 }}>
                   Potential match-fixing report. Evidence inconclusive after log review.
                 </div>
               </div>
@@ -298,19 +298,19 @@ export default function PlayerDetails({ player, onBack }) {
 
           {/* System Access */}
           <div className="mgms-card" style={{ padding: 22 }}>
-            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>System Access</h3>
+            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: 14 }}>System Access</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '0.82rem', marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Account Status:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Account Status:</span>
                 <span className="badge badge-green">Active</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Email Verified:</span>
-                <span style={{ fontWeight: 600, color: '#10b981' }}>Yes</span>
+                <span style={{ color: 'var(--text-muted)' }}>Email Verified:</span>
+                <span style={{ fontWeight: 600, color: 'var(--success-text)' }}>Yes</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>MFA Enabled:</span>
-                <span style={{ fontWeight: 600, color: '#ef4444' }}>No</span>
+                <span style={{ color: 'var(--text-muted)' }}>MFA Enabled:</span>
+                <span style={{ fontWeight: 600, color: 'var(--danger-text)' }}>No</span>
               </div>
             </div>
 
@@ -318,7 +318,7 @@ export default function PlayerDetails({ player, onBack }) {
               <button className="btn btn-secondary btn-sm" style={{ width: '100%' }} onClick={() => addToast('Downloaded raw JSON payload', 'info')}>
                 <FileText size={14} /> <span>View Raw JSON Data</span>
               </button>
-              <button className="btn btn-secondary btn-sm" style={{ width: '100%', color: '#ef4444' }} onClick={() => addToast('Session revoked', 'warning')}>
+              <button className="btn btn-secondary btn-sm" style={{ width: '100%', color: 'var(--danger-text)' }} onClick={() => addToast('Session revoked', 'warning')}>
                 <LogOut size={14} /> <span>Force Logout Session</span>
               </button>
             </div>

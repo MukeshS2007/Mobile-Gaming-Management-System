@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { X, Lock, Mail, User, Calendar, Globe, AlertTriangle, CheckCircle } from 'lucide-react';
 
-export default function AuthModal({ isOpen, onClose }) {
+export default function AuthModal({ isOpen, onClose, onSuccess }) {
+  const navigate = useNavigate();
   const { login, register, addToast } = useAuth();
   const [tab, setTab] = useState('login'); // 'login' | 'register' | 'reset'
   const [loading, setLoading] = useState(false);
@@ -47,6 +49,11 @@ export default function AuthModal({ isOpen, onClose }) {
     try {
       await login(loginCred, loginPass);
       onClose();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/dashboard');
+      }
     } catch {
       // toast shown in context
     } finally {
@@ -56,6 +63,16 @@ export default function AuthModal({ isOpen, onClose }) {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    const usernameRegex = /^[A-Za-z0-9_]{3,20}$/;
+    if (!usernameRegex.test(regUser)) {
+      addToast('Username must be 3-20 characters (letters, numbers, or underscore)', 'error');
+      return;
+    }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(regPass)) {
+      addToast('Password must be at least 8 characters and include uppercase, lowercase, a digit, and a special symbol (e.g. Mukesh@2026)', 'error');
+      return;
+    }
     if (!privacyConsent) {
       addToast('You must accept the Privacy Policy to create an account', 'error');
       return;
@@ -79,6 +96,11 @@ export default function AuthModal({ isOpen, onClose }) {
         lastName: regLast
       });
       onClose();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/dashboard');
+      }
     } catch {
       // toast shown in context
     } finally {

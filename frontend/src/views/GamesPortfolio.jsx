@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
-import { Download, Plus, Filter, Eye, Edit3, MoreHorizontal, Trophy, TrendingUp, Radio, X, Check } from 'lucide-react';
+import { exportToCSV } from '../utils/csvExport';
+import { Download, Plus, Filter, Eye, Edit3, MoreHorizontal, Trophy, TrendingUp, Radio, X, Check, Search } from 'lucide-react';
 
 const CATEGORY_META = {
-  RPG: { color: '#e0e7ff', textColor: '#4338ca', icon: '🤖' },
-  Strategy: { color: '#e0f2fe', textColor: '#0369a1', icon: '🛡️' },
-  Simulation: { color: '#f3e8ff', textColor: '#7e22ce', icon: '🚀' },
-  Adventure: { color: '#dcfce7', textColor: '#15803d', icon: '⚔️' },
-  Racing: { color: '#ffedd5', textColor: '#c2410c', icon: '🏎️' },
-  Action: { color: '#fee2e2', textColor: '#b91c1c', icon: '⚡' }
+  RPG: { color: 'rgba(99, 102, 241, 0.15)', textColor: '#818cf8', icon: '🤖' },
+  Strategy: { color: 'rgba(14, 165, 233, 0.15)', textColor: '#38bdf8', icon: '🛡️' },
+  Simulation: { color: 'rgba(168, 85, 247, 0.15)', textColor: '#c084fc', icon: '🚀' },
+  Adventure: { color: 'rgba(16, 185, 129, 0.15)', textColor: '#34d399', icon: '⚔️' },
+  Racing: { color: 'rgba(245, 158, 11, 0.15)', textColor: '#fbbf24', icon: '🏎️' },
+  Action: { color: 'rgba(239, 68, 68, 0.15)', textColor: '#f87171', icon: '⚡' }
 };
 
 const DEFAULT_GAMES = [
@@ -18,8 +19,8 @@ const DEFAULT_GAMES = [
     title: 'Cyber Strike: Neon City',
     version: 'v2.4.1',
     category: 'RPG',
-    categoryColor: '#e0e7ff',
-    categoryTextColor: '#4338ca',
+    categoryColor: 'rgba(99, 102, 241, 0.15)',
+    categoryTextColor: '#818cf8',
     installBase: '1.2M',
     revenue: '$45,200',
     status: 'Live',
@@ -30,8 +31,8 @@ const DEFAULT_GAMES = [
     title: 'Shadow Realm Tactics',
     version: 'v1.0.9',
     category: 'Strategy',
-    categoryColor: '#e0f2fe',
-    categoryTextColor: '#0369a1',
+    categoryColor: 'rgba(14, 165, 233, 0.15)',
+    categoryTextColor: '#38bdf8',
     installBase: '850K',
     revenue: '$12,800',
     status: 'Maintenance',
@@ -42,8 +43,8 @@ const DEFAULT_GAMES = [
     title: 'Star Voyager: Infinity',
     version: 'v3.1.0',
     category: 'Simulation',
-    categoryColor: '#f3e8ff',
-    categoryTextColor: '#7e22ce',
+    categoryColor: 'rgba(168, 85, 247, 0.15)',
+    categoryTextColor: '#c084fc',
     installBase: '2.4M',
     revenue: '$102,500',
     status: 'Live',
@@ -54,8 +55,8 @@ const DEFAULT_GAMES = [
     title: 'Pixel Quest: Dungeons',
     version: 'v0.8.5',
     category: 'Adventure',
-    categoryColor: '#dcfce7',
-    categoryTextColor: '#15803d',
+    categoryColor: 'rgba(16, 185, 129, 0.15)',
+    categoryTextColor: '#34d399',
     installBase: '450K',
     revenue: '$4,100',
     status: 'Beta',
@@ -66,8 +67,8 @@ const DEFAULT_GAMES = [
     title: 'Velocity Racer X',
     version: 'v4.2.0',
     category: 'Racing',
-    categoryColor: '#ffedd5',
-    categoryTextColor: '#c2410c',
+    categoryColor: 'rgba(245, 158, 11, 0.15)',
+    categoryTextColor: '#fbbf24',
     installBase: '3.1M',
     revenue: '$89,000',
     status: 'Live',
@@ -75,7 +76,7 @@ const DEFAULT_GAMES = [
   }
 ];
 
-export default function GamesPortfolio() {
+export default function GamesPortfolio({ searchQuery = '', setSearchQuery, onClearSearch }) {
   const { games, refreshGames, activeGame, setActiveGame, addToast } = useAuth();
   const [filter, setFilter] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -94,35 +95,37 @@ export default function GamesPortfolio() {
   // Map live games from backend API
   const displayGames = (games && games.length > 0)
     ? games.map((g, idx) => {
-        const meta = CATEGORY_META[g.gameType] || { color: '#f1f5f9', textColor: '#475569', icon: '🎮' };
+        const meta = CATEGORY_META[g.gameType] || { color: 'var(--bg-subtle)', textColor: 'var(--text-muted)', icon: '🎮' };
         const statusMap = {
           LIVE: 'Live',
           MAINTENANCE: 'Maintenance',
           DEVELOPMENT: 'Beta',
-          TESTING: 'Beta',
-          SOFT_LAUNCH: 'Live',
-          DEPRECATED: 'Maintenance'
+          SOFT_LAUNCH: 'Beta'
         };
-        const statusLabel = statusMap[g.status] || g.status;
         return {
-          id: g.id,
-          raw: g,
+          id: g.id || `g-backend-${idx}`,
           title: g.gameName,
-          version: `v${g.version}`,
-          category: g.gameType,
+          version: `v${g.version || '1.0.0'}`,
+          category: g.gameType || 'Action',
           categoryColor: meta.color,
           categoryTextColor: meta.textColor,
-          installBase: `${(g.buildNumber * 45 + 500)}K`,
-          revenue: `$${(g.buildNumber * 1850 + 8200).toLocaleString()}`,
-          status: statusLabel,
+          installBase: `${((idx + 1) * 340).toLocaleString()}K`,
+          revenue: `$${((idx + 1) * 14200).toLocaleString()}`,
+          status: statusMap[g.status] || 'Live',
           icon: meta.icon
         };
       })
     : DEFAULT_GAMES;
 
   const filteredGames = displayGames.filter((g) => {
-    if (filter === 'all') return true;
-    return g.status.toLowerCase() === filter.toLowerCase();
+    const matchesFilter = filter === 'all' || g.status.toLowerCase() === filter.toLowerCase();
+    const q = (searchQuery || '').trim().toLowerCase();
+    const matchesSearch = !q ||
+      g.title.toLowerCase().includes(q) ||
+      g.category.toLowerCase().includes(q) ||
+      g.version.toLowerCase().includes(q) ||
+      g.status.toLowerCase().includes(q);
+    return matchesFilter && matchesSearch;
   });
 
   const handleCreateGame = async (e) => {
@@ -150,21 +153,45 @@ export default function GamesPortfolio() {
     }
   };
 
+  const handleExportGamesCSV = () => {
+    const listToExport = filteredGames.length > 0 ? filteredGames : displayGames;
+    const rows = listToExport.map(g => ({
+      'Game ID': g.id,
+      'Title': g.title,
+      'Category': g.category,
+      'Version': g.version,
+      'Install Base': g.installBase,
+      '24h Revenue': g.revenue,
+      'Status': g.status
+    }));
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const success = exportToCSV(`mgms_games_catalogue_${dateStr}.csv`, rows);
+    if (success && addToast) {
+      addToast(`Downloaded ${rows.length} games as CSV file!`, 'success');
+    }
+  };
+
   return (
     <div style={{ padding: '32px 40px', maxWidth: 1400, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--text-heading)', marginBottom: 4, letterSpacing: '-0.03em' }}>
             Game Portfolio
           </h1>
-          <p style={{ fontSize: '0.88rem', color: '#64748b' }}>
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
             Manage and monitor live-ops for your entire gaming suite ({displayGames.length} titles registered in PostgreSQL).
           </p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button className="btn btn-secondary btn-sm" style={{ padding: '8px 14px' }} onClick={() => addToast('Exporting game catalogue...', 'info')}>
+          <button 
+            className="btn btn-secondary btn-sm" 
+            style={{ padding: '8px 14px' }} 
+            onClick={handleExportGamesCSV}
+            title="Download CSV report of games"
+          >
             <Download size={15} />
             <span>Export CSV</span>
           </button>
@@ -194,17 +221,85 @@ export default function GamesPortfolio() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
-            Connected to Spring Boot API: <strong style={{ color: '#059669' }}>UP</strong>
+          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            Connected to Spring Boot API: <strong style={{ color: 'var(--success-text)' }}>● UP</strong>
           </span>
         </div>
       </div>
 
       {/* Game Table Card */}
       <div className="mgms-card" style={{ padding: 24, marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Catalogue</h3>
-          <span className="badge badge-secondary" style={{ fontSize: '0.72rem' }}>{filteredGames.length} Games</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading)' }}>Catalogue</h3>
+            <span className="badge badge-secondary" style={{ fontSize: '0.72rem' }}>{filteredGames.length} Games</span>
+            {searchQuery && (
+              <span className="badge badge-purple" style={{ fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: 4 }}>
+                Filtered: "{searchQuery}"
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', width: 260 }}>
+              <Search 
+                size={14} 
+                style={{ 
+                  position: 'absolute', 
+                  left: 12, 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  color: 'var(--text-dim)' 
+                }} 
+              />
+              <input
+                type="text"
+                placeholder="Search games by title, genre..."
+                className="form-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
+                style={{ 
+                  paddingLeft: 34, 
+                  paddingRight: searchQuery ? 30 : 12, 
+                  height: 34, 
+                  fontSize: '0.82rem',
+                  background: 'var(--bg-subtle)'
+                }}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery && setSearchQuery('')}
+                  style={{ 
+                    position: 'absolute', 
+                    right: 8, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    background: 'none', 
+                    border: 'none', 
+                    color: 'var(--text-dim)', 
+                    cursor: 'pointer',
+                    padding: 2,
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                  title="Clear search"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+
+            {searchQuery && onClearSearch && (
+              <button 
+                onClick={onClearSearch}
+                className="btn btn-secondary btn-sm"
+                style={{ padding: '6px 12px', fontSize: '0.76rem' }}
+              >
+                Reset Filter
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="table-container">
@@ -221,27 +316,41 @@ export default function GamesPortfolio() {
               </tr>
             </thead>
             <tbody>
-              {filteredGames.map((g) => (
+              {filteredGames.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--text-muted)' }}>
+                    No games found matching "{searchQuery}"
+                    {onClearSearch && (
+                      <div style={{ marginTop: 12 }}>
+                        <button onClick={onClearSearch} className="btn btn-secondary btn-sm">
+                          Clear search
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ) : (
+                filteredGames.map((g) => (
                 <tr key={g.id}>
                   <td><input type="checkbox" /></td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                       <div style={{
-                        width: 38,
-                        height: 38,
+                        width: 40,
+                        height: 40,
                         borderRadius: 10,
-                        background: '#eef2ff',
-                        color: '#6366f1',
+                        background: 'var(--bg-subtle)',
+                        border: '1px solid var(--border-color)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '1.2rem'
+                        fontSize: '1.25rem'
                       }}>
                         {g.icon}
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a' }}>{g.title}</div>
-                        <div style={{ fontSize: '0.74rem', color: '#64748b' }}>{g.version}</div>
+                        <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-heading)' }}>{g.title}</div>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>{g.version}</div>
                       </div>
                     </div>
                   </td>
@@ -252,13 +361,14 @@ export default function GamesPortfolio() {
                       fontSize: '0.74rem',
                       fontWeight: 600,
                       background: g.categoryColor,
-                      color: g.categoryTextColor
+                      color: g.categoryTextColor,
+                      border: '1px solid var(--border-color)'
                     }}>
                       {g.category}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{g.installBase}</td>
-                  <td style={{ fontWeight: 700, color: '#0f172a', fontFamily: 'Outfit' }}>{g.revenue}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{g.installBase}</td>
+                  <td style={{ fontWeight: 800, color: 'var(--text-heading)', fontFamily: 'Outfit' }}>{g.revenue}</td>
                   <td>
                     <span className={`badge ${
                       g.status === 'Live' ? 'badge-green' :
@@ -268,29 +378,29 @@ export default function GamesPortfolio() {
                     </span>
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', gap: 8, color: '#64748b' }}>
-                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><Eye size={16} /></button>
-                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><Edit3 size={16} /></button>
-                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><MoreHorizontal size={16} /></button>
+                    <div style={{ display: 'inline-flex', gap: 8, color: 'var(--text-muted)' }}>
+                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><Eye size={16} /></button>
+                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><Edit3 size={16} /></button>
+                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><MoreHorizontal size={16} /></button>
                     </div>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, fontSize: '0.8rem', color: '#64748b' }}>
-          <span>Showing 1-5 of 24 games</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <span>Showing 1-5 of {filteredGames.length} games</span>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            <span style={{ cursor: 'pointer' }}>&lt;</span>
-            <span style={{ padding: '2px 8px', background: '#6366f1', color: 'white', borderRadius: 4, fontWeight: 700 }}>1</span>
+            <span style={{ cursor: 'pointer', color: 'var(--text-dim)' }}>&lt;</span>
+            <span style={{ padding: '2px 8px', background: 'var(--primary-gradient)', color: 'white', borderRadius: 6, fontWeight: 700 }}>1</span>
             <span style={{ padding: '2px 8px', cursor: 'pointer' }}>2</span>
             <span style={{ padding: '2px 8px', cursor: 'pointer' }}>3</span>
             <span>...</span>
             <span style={{ padding: '2px 8px', cursor: 'pointer' }}>5</span>
-            <span style={{ cursor: 'pointer' }}>&gt;</span>
+            <span style={{ cursor: 'pointer', color: 'var(--text-dim)' }}>&gt;</span>
           </div>
         </div>
       </div>
@@ -298,32 +408,32 @@ export default function GamesPortfolio() {
       {/* Bottom Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
         <div className="mgms-card" style={{ padding: 20, display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f5f3ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-glow)' }}>
             <Trophy size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>TOP PERFORMING</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Cyber Strike</div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>TOP PERFORMING</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-heading)' }}>Cyber Strike</div>
           </div>
         </div>
 
         <div className="mgms-card" style={{ padding: 20, display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--success-light)', color: 'var(--success-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--success-border)' }}>
             <TrendingUp size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>AVG. GROWTH</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>+12.4% MoM</div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>AVG. GROWTH</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-heading)' }}>+12.4% MoM</div>
           </div>
         </div>
 
         <div className="mgms-card" style={{ padding: 20, display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f0f9ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--info-light)', color: 'var(--info-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--info-border)' }}>
             <Radio size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>ACTIVE CAMPAIGNS</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>8 Live Ops</div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600 }}>ACTIVE CAMPAIGNS</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-heading)' }}>8 Live Ops</div>
           </div>
         </div>
       </div>
@@ -333,15 +443,18 @@ export default function GamesPortfolio() {
         <div className="modal-backdrop" onClick={() => setShowAddModal(false)}>
           <div className="modal-content" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Register New Game</h2>
-              <button className="modal-close" onClick={() => setShowAddModal(false)}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-heading)' }}>Register New Game</h2>
+              <button 
+                onClick={() => setShowAddModal(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              >
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleCreateGame} style={{ padding: '20px 24px' }}>
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
                   GAME TITLE
                 </label>
                 <input
@@ -356,7 +469,7 @@ export default function GamesPortfolio() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
                     CATEGORY
                   </label>
                   <select
@@ -374,7 +487,7 @@ export default function GamesPortfolio() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
                     STATUS
                   </label>
                   <select
@@ -392,7 +505,7 @@ export default function GamesPortfolio() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
                     VERSION
                   </label>
                   <input
@@ -406,7 +519,7 @@ export default function GamesPortfolio() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
                     MINIMUM AGE
                   </label>
                   <input
@@ -421,7 +534,7 @@ export default function GamesPortfolio() {
               </div>
 
               <div style={{ marginBottom: 18 }}>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>
                   DESCRIPTION
                 </label>
                 <textarea

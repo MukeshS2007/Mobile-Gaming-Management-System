@@ -22,6 +22,21 @@ class ApiErrors {
  ResponseEntity<Map<String,String>> bad(IllegalArgumentException e){
   return ResponseEntity.badRequest().body(Map.of("error",e.getMessage()));
  }
+ @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+ ResponseEntity<Map<String,String>> handleValidation(org.springframework.web.bind.MethodArgumentNotValidException e){
+  String msg = e.getBindingResult().getFieldErrors().stream()
+          .map(f -> {
+           if ("password".equals(f.getField())) {
+            return "Password must be at least 8 characters and include uppercase, lowercase, a digit, and a special character (e.g. Mukesh@2026).";
+           }
+           if ("username".equals(f.getField())) {
+            return "Username must be 3-20 alphanumeric characters or underscores.";
+           }
+           return f.getField() + ": " + (f.getDefaultMessage() != null ? f.getDefaultMessage() : "invalid");
+          })
+          .collect(Collectors.joining("; "));
+  return ResponseEntity.badRequest().body(Map.of("error", msg.isEmpty() ? "Validation failed" : msg));
+ }
 }
 @RestController
 @RequestMapping("/auth")
